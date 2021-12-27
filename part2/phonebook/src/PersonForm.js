@@ -4,13 +4,13 @@ const PersonForm = props => {
 	return (
 		<form onSubmit={props.addPerson}>
 			<div>
-				name:{' '}
+				Name:{' '}
 				<input
 					value={props.newName}
 					onChange={props.handleNameChange}
 				/>
 				<br />
-				number:{' '}
+				Number:{' '}
 				<input
 					value={props.newNumber}
 					onChange={props.handleNumberChange}

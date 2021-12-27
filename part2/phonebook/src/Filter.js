@@ -3,7 +3,7 @@ import React from 'react'
 const Filter = ({filterName, handleFilterChange}) => {
 	return (
 		<div>
-			filter the results:{' '}
+			Filter the names:{' '}
 			<input value={filterName} onChange={handleFilterChange} />
 		</div>
 	)
