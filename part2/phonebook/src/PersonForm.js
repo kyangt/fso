@@ -2,7 +2,7 @@ import React from 'react'
 
 const PersonForm = props => {
 	return (
-		<form onSubmit={props.addPerson}>
+		<form onSubmit={props.handleAddClick}>
 			<div>
 				Name:{' '}
 				<input
@@ -17,7 +17,7 @@ const PersonForm = props => {
 				/>
 			</div>
 			<div>
-				<button type='submit'>add</button>
+				<button type='submit'>Add</button>
 			</div>
 		</form>
 	)
