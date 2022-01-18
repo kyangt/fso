@@ -1,17 +1,21 @@
 import React, {useEffect, useState} from 'react'
-// import axios from 'axios'
 
 import Filter from './Filter'
 import PersonForm from './PersonForm'
 import Persons from './Persons'
+import Notification from './Notification'
+
 import personsService from './services/persons'
+
+import './index.css'
 
 const App = () => {
 	const [filterName, setFilterName] = useState('')
 	const [newName, setNewName] = useState('')
 	const [newNumber, setNewNumber] = useState('')
 	const [persons, setPersons] = useState([])
-	// const personsUrl = 'http://localhost:3001/persons'
+	const [confirmMessage, setConfirmMessage] = useState('')
+	const [errorMessage, setErrorMessage] = useState('')
 
 	useEffect(() => {
 		personsService
@@ -39,9 +43,13 @@ const App = () => {
 
 	const handleDeleteClick = (id, name) => {
 		if (window.confirm(`Delete ${name}?`)) {
-			personsService
-				.deletePerson(id)
-				.then(setPersons(persons.filter(person => person.id !== id)))
+			personsService.deletePerson(id).then(deletedPerson => {
+				setPersons(persons.filter(person => person.id !== id))
+				setErrorMessage(`${name} has been deleted from database.`)
+				setTimeout(() => {
+					setErrorMessage(null)
+				}, 5000)
+			})
 		}
 	}
 
@@ -58,6 +66,10 @@ const App = () => {
 		if (!sameName(newName)) {
 			personsService.create(newPerson).then(returnedPerson => {
 				setPersons(persons.concat(returnedPerson))
+				setConfirmMessage(`${newName} has been added to the phonebook.`)
+				setTimeout(() => {
+					setConfirmMessage(null)
+				}, 5000)
 				setNewName('')
 				setNewNumber('')
 			})
@@ -69,18 +81,37 @@ const App = () => {
 			const idx = (name =>
 				persons.findIndex(person => person.name === name))(newName)
 			const id = persons[idx].id
-			personsService.update(id, newPerson).then(returnedPerson => {
-				setPersons(
-					persons.map(person =>
-						person.id !== id ? person : returnedPerson
+			personsService
+				.update(id, newPerson)
+				.then(returnedPerson => {
+					setPersons(
+						persons.map(person =>
+							person.id !== id ? person : returnedPerson
+						)
 					)
-				)
-			})
+				})
+				.catch(error => {
+					setErrorMessage(
+						`${newName} has already been removed from the database.`
+					)
+					setTimeout(() => {
+						setErrorMessage(null)
+						setNewName('')
+						setNewNumber('')
+						personsService
+							.getAll()
+							.then(initialPersons => setPersons(initialPersons))
+					}, 5000)
+				})
 		}
 	}
 
 	return (
 		<div>
+			<Notification
+				confirmMessage={confirmMessage}
+				errorMessage={errorMessage}
+			/>
 			<h2>Phonebook</h2>
 			<Filter
 				filterName={filterName}
